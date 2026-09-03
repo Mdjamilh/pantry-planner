@@ -54,7 +54,9 @@ class ShoppingItem:
         return units.format_amount(self.quantity, self.unit)
 
 
-def scale_quantity(quantity: float | None, recipe_servings: int, planned_servings: int) -> float | None:
+def scale_quantity(
+    quantity: float | None, recipe_servings: int, planned_servings: int
+) -> float | None:
     if quantity is None:
         return None
     if recipe_servings <= 0:
@@ -109,8 +111,7 @@ def build_shopping_list(
                 if other:
                     got_qty, got_unit = units.humanize(other[0], have[other[0]])
                     note = (
-                        f"pantry has {units.format_amount(got_qty, got_unit)}, "
-                        "units don't compare"
+                        f"pantry has {units.format_amount(got_qty, got_unit)}, units don't compare"
                     )
             items.append(
                 ShoppingItem(

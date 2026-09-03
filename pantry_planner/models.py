@@ -37,12 +37,16 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
     display_name: Mapped[str] = mapped_column(String(80))
     password_hash: Mapped[str] = mapped_column(String(255))
-    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     pantry_items: Mapped[list[PantryItem]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
-    recipes: Mapped[list[Recipe]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    recipes: Mapped[list[Recipe]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class PantryItem(Base):
@@ -54,7 +58,9 @@ class PantryItem(Base):
     quantity: Mapped[float] = mapped_column(Float)
     unit: Mapped[str] = mapped_column(String(20), default="")
     expires_on: Mapped[dt.date | None] = mapped_column(Date, nullable=True)
-    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     user: Mapped[User] = relationship(back_populates="pantry_items")
 
@@ -74,7 +80,9 @@ class Recipe(Base):
     instructions: Mapped[str] = mapped_column(Text, default="")
     # How the recipe got here: typed in, imported by Claude, or by the local parser.
     source: Mapped[str] = mapped_column(String(20), default="manual")
-    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     user: Mapped[User] = relationship(back_populates="recipes")
     ingredients: Mapped[list[RecipeIngredient]] = relationship(

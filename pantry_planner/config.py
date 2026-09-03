@@ -59,9 +59,7 @@ class Settings(BaseSettings):
         if self.database_url.startswith("postgres://"):
             self.database_url = "postgresql+psycopg://" + self.database_url[len("postgres://") :]
         elif self.database_url.startswith("postgresql://"):
-            self.database_url = (
-                "postgresql+psycopg://" + self.database_url[len("postgresql://") :]
-            )
+            self.database_url = "postgresql+psycopg://" + self.database_url[len("postgresql://") :]
         return self
 
     @property
