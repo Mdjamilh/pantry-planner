@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Today{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">{{ today.strftime('%A') }}, {{ today.day }} {{ today.strftime('%B') }}</p>
+    <h1>Hello, {{ user.display_name }}</h1>
+    <p>{% if expiring %}{{ expiring|length }} item{{ 's' if expiring|length != 1 }} in your pantry need{{ 's' if expiring|length == 1 }} using up soon.{% else %}Nothing in the pantry is about to expire. Nice.{% endif %}</p>
+  </div>
+  <a class="btn btn-primary" href="/plan">Open this week's plan</a>
+</div>
+
+<div class="grid grid-stats mb-4">
+  <a class="card stat" href="/pantry"><span class="stat-value">{{ pantry_count }}</span><span class="stat-label">items in the pantry</span></a>
+  <a class="card stat" href="/recipes"><span class="stat-value">{{ recipe_count }}</span><span class="stat-label">recipes in your book</span></a>
+  <a class="card stat" href="/plan"><span class="stat-value">{{ week_count }}</span><span class="stat-label">meals planned this week</span></a>
+  <a class="card stat" href="/shopping"><span class="stat-value">{{ shopping_count }}</span><span class="stat-label">things to buy</span></a>
+</div>
+
+<div class="card hero-cta mb-4">
+  <div>
+    <h2>What can I cook tonight?</h2>
+    <p>Get ideas that use up what expires first{% if ai_enabled %}, suggested by Claude{% else %}, from the built-in matcher{% endif %}.</p>
+  </div>
+  <a class="btn btn-lg" href="/cook">Find a dish</a>
+</div>
+
+<div class="grid grid-2">
+  <section class="card">
+    <div class="card-head">
+      <h2>Use soon</h2>
+      <a class="card-link" href="/pantry">All pantry items</a>
+    </div>
+    {% if expiring %}
+    <ul class="list">
+      {% for item in expiring %}
+      {% set left = item.days_left(today) %}
+      <li>
+        <div>
+          <strong>{{ item.name }}</strong>
+          <div class="meta">{{ format_amount(item.quantity, item.unit) }}</div>
+        </div>
+        <span class="badge tone-{{ days_tone(left, soon_days) }}">{{ days_label(left) }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted mb-0">Nothing expires in the next {{ soon_days }} days.</p>
+    {% endif %}
+  </section>
+
+  <section class="card today-meals">
+    <div class="card-head">
+      <h2>On the menu today</h2>
+      <a class="card-link" href="/plan">Edit plan</a>
+    </div>
+    {% if todays %}
+    <ul class="list">
+      {% for e in todays %}
+      <li>
+        <span class="slot">{{ e.slot }}</span>
+        <a href="/recipes/{{ e.recipe.id }}" class="item-name">{{ e.recipe.title }}</a>
+        <span class="meta">{{ e.servings }} serving{{ 's' if e.servings != 1 }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted mb-0">Nothing planned for today. <a href="/plan">Add a meal</a> or <a href="/cook">get an idea</a>.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
