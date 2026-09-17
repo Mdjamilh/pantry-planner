@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<section class="auth">
+  <div class="auth-hero">
+    <p class="eyebrow">Meal planning that starts in your fridge</p>
+    <h1>Cook what you have.<br>Buy only what you need.</h1>
+    <p class="lede">Keep track of your pantry and what's about to go off, plan the week, and get a shopping list that already knows what's in the cupboard.</p>
+    <ul class="feature-list">
+      <li><span class="feature-icon" aria-hidden="true">1</span><div><strong>Pantry with expiry dates</strong><br><span class="muted">See at a glance what needs using up first.</span></div></li>
+      <li><span class="feature-icon" aria-hidden="true">2</span><div><strong>Weekly plan and smart shopping list</strong><br><span class="muted">Amounts are scaled, summed and converted between units.</span></div></li>
+      <li><span class="feature-icon" aria-hidden="true">3</span><div><strong>"What can I cook?"</strong><br><span class="muted">Ideas from Claude that use the things expiring soonest.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="card card-raised auth-card">
+    {% if demo_mode %}
+    <div class="demo-box">
+      <p><strong>Just looking?</strong> Jump into a kitchen that's already stocked, with recipes and a planned week.</p>
+      <form method="post" action="/demo-login">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <button class="btn btn-accent btn-block btn-lg" type="submit">Try the demo</button>
+      </form>
+    </div>
+    <div class="divider">or sign in</div>
+    {% endif %}
+
+    <h2>Sign in</h2>
+    {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="/login" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <input type="hidden" name="next" value="{{ next or '/' }}">
+      <div class="field">
+        <label for="email">Email</label>
+        <input class="input" id="email" name="email" type="email" autocomplete="email" required value="{{ email or '' }}">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+    <p class="small muted mt-4 mb-0">New here? <a href="/register">Create an account</a>.</p>
+  </div>
+</section>
+{% endblock %}

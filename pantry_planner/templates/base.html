@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Pantry Planner{% endblock %} - Pantry Planner</title>
+  <meta name="description" content="Plan the week's meals around what's already in your kitchen.">
+  <meta name="csrf-token" content="{{ csrf_token(request) }}">
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false, "allowEval": false, "historyCacheSize": 0}'>
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="{{ static('favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ static('css/app.css') }}">
+  <script src="{{ static('js/theme.js') }}"></script>
+  <script src="{{ static('vendor/htmx-2.0.11.min.js') }}" defer></script>
+  <script src="{{ static('js/app.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  {% if demo_mode %}
+  <div class="demo-banner" role="note">
+    <div class="container">
+      Public demo: data is shared and resets every few hours. Please don't enter anything personal.
+    </div>
+  </div>
+  {% endif %}
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">
+        <img class="brand-mark" src="{{ static('favicon.svg') }}" alt="" width="32" height="32">
+        Pantry Planner
+      </a>
+      {% if user %}
+      <nav class="nav" aria-label="Main">
+        <a href="/" {% if nav == 'today' %}aria-current="page"{% endif %}>Today</a>
+        <a href="/pantry" {% if nav == 'pantry' %}aria-current="page"{% endif %}>Pantry</a>
+        <a href="/recipes" {% if nav == 'recipes' %}aria-current="page"{% endif %}>Recipes</a>
+        <a href="/plan" {% if nav == 'plan' %}aria-current="page"{% endif %}>Plan</a>
+        <a href="/shopping" {% if nav == 'shopping' %}aria-current="page"{% endif %}>Shopping</a>
+        <a href="/cook" class="nav-ai" {% if nav == 'cook' %}aria-current="page"{% endif %}>What can I cook?</a>
+      </nav>
+      {% endif %}
+      <div class="header-actions">
+        <button class="btn btn-ghost icon-btn" type="button" data-theme-toggle aria-pressed="false" title="Toggle theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <span class="visually-hidden">Toggle dark mode</span>
+        </button>
+        {% if user %}
+        <span class="user-chip">{{ user.display_name }}</span>
+        <form method="post" action="/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+          <button class="btn btn-sm" type="submit">Sign out</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      {% for f in flashes or [] %}
+      <div class="alert {% if f.kind == 'error' %}alert-error{% endif %}" role="status">
+        <span>{{ f.text }}</span>
+        <button class="alert-close" type="button" data-dismiss aria-label="Dismiss">&times;</button>
+      </div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>Pantry Planner v{{ version }}. Cook what you have, buy what you need.</span>
+      <span>
+        {% if ai_enabled %}Suggestions by Claude ({{ ai_model }}){% else %}Suggestions by the built-in matcher{% endif %}
+        &middot; <a href="https://github.com/Mdjamilh/pantry-planner">Source on GitHub</a>
+      </span>
+    </div>
+  </footer>
+</body>
+</html>

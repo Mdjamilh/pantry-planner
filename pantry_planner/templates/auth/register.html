@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+<section class="auth">
+  <div class="auth-hero">
+    <p class="eyebrow">Free and open source</p>
+    <h1>Set up your kitchen</h1>
+    <p class="lede">An account keeps your pantry, recipes and plans separate from everyone else's. Passwords are stored as Argon2 hashes.</p>
+    {% if demo_mode %}
+    <div class="alert alert-warn mt-5">This is a public demo. Accounts are deleted when the demo resets.</div>
+    {% endif %}
+  </div>
+  <div class="card card-raised auth-card">
+    <h2>Create account</h2>
+    <form method="post" action="/register" class="form-grid" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <div class="field {% if errors and errors.display_name %}has-error{% endif %}">
+        <label for="display_name">Your name</label>
+        <input class="input" id="display_name" name="display_name" autocomplete="nickname" maxlength="80" required value="{{ display_name or '' }}">
+        {% if errors and errors.display_name %}<span class="field-error">{{ errors.display_name }}</span>{% endif %}
+      </div>
+      <div class="field {% if errors and errors.email %}has-error{% endif %}">
+        <label for="email">Email</label>
+        <input class="input" id="email" name="email" type="email" autocomplete="email" required value="{{ email or '' }}">
+        {% if errors and errors.email %}<span class="field-error">{{ errors.email }}</span>{% endif %}
+      </div>
+      <div class="field {% if errors and errors.password %}has-error{% endif %}">
+        <label for="password">Password</label>
+        <input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+        <span class="hint">At least 8 characters.</span>
+        {% if errors and errors.password %}<span class="field-error">{{ errors.password }}</span>{% endif %}
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Create account</button>
+    </form>
+    <p class="small muted mt-4 mb-0">Already have one? <a href="/login">Sign in</a>.</p>
+  </div>
+</section>
+{% endblock %}
