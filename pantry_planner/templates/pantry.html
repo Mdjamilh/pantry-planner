@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Pantry{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Inventory</p>
+    <h1>Your pantry</h1>
+    <p>Everything you have at home, soonest expiry first. Expired items don't count towards the shopping list.</p>
+  </div>
+</div>
+{% include "partials/pantry_panel.html" %}
+{% endblock %}

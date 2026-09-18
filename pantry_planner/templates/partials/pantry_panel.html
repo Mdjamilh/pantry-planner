@@ -1,0 +1,56 @@
+<div id="pantry-panel" class="stack">
+  <section class="card">
+    <h2 class="mb-4">Add an item</h2>
+    <form method="post" action="/pantry" class="form-inline"
+          hx-post="/pantry" hx-target="#pantry-panel" hx-swap="outerHTML">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <div class="field field-name {% if errors and errors.name %}has-error{% endif %}">
+        <label for="p-name">Item</label>
+        <input class="input" id="p-name" name="name" placeholder="e.g. Cherry tomatoes" maxlength="120" required value="{{ form.name if form else '' }}" {% if form %}autofocus{% endif %}>
+        {% if errors and errors.name %}<span class="field-error">{{ errors.name }}</span>{% endif %}
+      </div>
+      <div class="field {% if errors and errors.quantity %}has-error{% endif %}">
+        <label for="p-qty">Amount</label>
+        <input class="input" id="p-qty" name="quantity" inputmode="decimal" placeholder="250" required value="{{ form.quantity if form else '' }}">
+        {% if errors and errors.quantity %}<span class="field-error">{{ errors.quantity }}</span>{% endif %}
+      </div>
+      <div class="field">
+        <label for="p-unit">Unit</label>
+        <select class="select" id="p-unit" name="unit">
+          {% for u in units %}<option value="{{ u }}" {% if form and form.unit == u %}selected{% endif %}>{{ u or 'pieces' }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field {% if errors and errors.expires_on %}has-error{% endif %}">
+        <label for="p-exp">Best before <span class="muted">(optional)</span></label>
+        <input class="input" id="p-exp" name="expires_on" type="date" value="{{ form.expires_on if form else '' }}">
+        {% if errors and errors.expires_on %}<span class="field-error">{{ errors.expires_on }}</span>{% endif %}
+      </div>
+      <div class="form-submit">
+        <button class="btn btn-primary btn-block" type="submit">Add</button>
+      </div>
+    </form>
+  </section>
+
+  {% if items %}
+  <div class="row">
+    <span class="badge badge-plain">{{ items|length }} item{{ 's' if items|length != 1 }}</span>
+    {% if soon_count %}<span class="badge tone-soon">{{ soon_count }} expiring within {{ soon_days }} days</span>{% endif %}
+    {% if expired_count %}<span class="badge tone-expired">{{ expired_count }} expired</span>{% endif %}
+  </div>
+  <div class="table-wrap">
+    <table class="table" id="pantry-table">
+      <thead>
+        <tr><th>Item</th><th class="num">Amount</th><th>Best before</th><th class="actions"><span class="visually-hidden">Actions</span></th></tr>
+      </thead>
+      <tbody>
+        {% for item in items %}{% include "partials/pantry_row.html" %}{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <h3>Your pantry is empty</h3>
+    <p>Add what's in your fridge and cupboards. Dates are optional but they power the "use soon" list.</p>
+  </div>
+  {% endif %}
+</div>

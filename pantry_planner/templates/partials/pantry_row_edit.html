@@ -1,0 +1,33 @@
+<tr id="item-{{ item.id }}">
+  <td colspan="4">
+    <form method="post" action="/pantry/{{ item.id }}" class="form-inline"
+          hx-post="/pantry/{{ item.id }}" hx-target="#item-{{ item.id }}" hx-swap="outerHTML">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <div class="field field-name {% if errors and errors.name %}has-error{% endif %}">
+        <label for="e-name-{{ item.id }}">Item</label>
+        <input class="input input-sm" id="e-name-{{ item.id }}" name="name" value="{{ item.name }}" maxlength="120" required>
+        {% if errors and errors.name %}<span class="field-error">{{ errors.name }}</span>{% endif %}
+      </div>
+      <div class="field {% if errors and errors.quantity %}has-error{% endif %}">
+        <label for="e-qty-{{ item.id }}">Amount</label>
+        <input class="input input-sm" id="e-qty-{{ item.id }}" name="quantity" inputmode="decimal" value="{{ format_quantity(item.quantity) }}" required>
+        {% if errors and errors.quantity %}<span class="field-error">{{ errors.quantity }}</span>{% endif %}
+      </div>
+      <div class="field">
+        <label for="e-unit-{{ item.id }}">Unit</label>
+        <select class="select select-sm" id="e-unit-{{ item.id }}" name="unit">
+          {% for u in units %}<option value="{{ u }}" {% if (item.unit or '') == u or (u == '' and item.unit == 'pc') %}selected{% endif %}>{{ u or 'pieces' }}</option>{% endfor %}
+          {% if item.unit and item.unit not in units and item.unit != 'pc' %}<option value="{{ item.unit }}" selected>{{ item.unit }}</option>{% endif %}
+        </select>
+      </div>
+      <div class="field {% if errors and errors.expires_on %}has-error{% endif %}">
+        <label for="e-exp-{{ item.id }}">Best before</label>
+        <input class="input input-sm" id="e-exp-{{ item.id }}" name="expires_on" type="date" value="{{ item.expires_on.isoformat() if item.expires_on else '' }}">
+      </div>
+      <div class="form-submit row">
+        <button class="btn btn-sm btn-primary" type="submit">Save</button>
+        <a class="btn btn-sm btn-ghost" href="/pantry" hx-get="/pantry/{{ item.id }}/row" hx-target="#item-{{ item.id }}" hx-swap="outerHTML">Cancel</a>
+      </div>
+    </form>
+  </td>
+</tr>

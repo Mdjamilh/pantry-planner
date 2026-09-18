@@ -1,0 +1,21 @@
+{% set left = item.days_left(today) %}
+{% set tone = days_tone(left) %}
+<tr id="item-{{ item.id }}" class="{% if tone == 'expired' %}is-expired{% elif tone == 'soon' %}is-soon{% endif %}">
+  <td class="item-name">{{ item.name }}</td>
+  <td class="num">{{ format_amount(item.quantity, item.unit) or '-' }}</td>
+  <td>
+    {% if item.expires_on %}
+    <span class="badge tone-{{ tone }}">{{ days_label(left) }}</span>
+    <span class="muted small">{{ short_date(item.expires_on) }}</span>
+    {% else %}<span class="muted small">no date</span>{% endif %}
+  </td>
+  <td class="actions">
+    <a class="btn btn-sm btn-ghost" href="/pantry/{{ item.id }}/edit"
+       hx-get="/pantry/{{ item.id }}/edit" hx-target="#item-{{ item.id }}" hx-swap="outerHTML">Edit</a>
+    <form method="post" action="/pantry/{{ item.id }}/delete" class="inline-form" data-confirm="Remove {{ item.name }}?"
+          hx-post="/pantry/{{ item.id }}/delete" hx-target="#item-{{ item.id }}" hx-swap="outerHTML" hx-confirm="Remove {{ item.name }}?">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <button class="btn btn-sm btn-danger" type="submit" aria-label="Remove {{ item.name }}">Remove</button>
+    </form>
+  </td>
+</tr>
