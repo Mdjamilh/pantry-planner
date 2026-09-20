@@ -1,0 +1,14 @@
+{% if error %}
+<div class="alert alert-error" role="alert">{{ error }}</div>
+{% elif result %}
+<div class="provider" data-provider="{{ result.provider }}">
+  {% if result.provider == 'claude' %}
+  <span class="badge tone-ai">Read by Claude</span> <span>{{ result.model }}</span>
+  {% else %}
+  <span class="badge tone-accent">Read by the built-in parser</span>
+  <span>{% if result.notice %}{{ result.notice }}{% else %}No Anthropic API key is set, so this ran locally.{% endif %}</span>
+  {% endif %}
+</div>
+<p class="muted">Check the result and fix anything that looks off, then save it to your recipe book.</p>
+{% with action='/recipes' %}{% include "partials/recipe_form.html" %}{% endwith %}
+{% endif %}

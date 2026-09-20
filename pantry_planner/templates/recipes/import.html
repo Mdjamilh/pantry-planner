@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Import a recipe{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow"><a href="/recipes">Recipes</a></p>
+    <h1>Import a recipe</h1>
+    <p>Paste a recipe from a website, a message or your notes. {% if ai_enabled %}Claude{% else %}The built-in parser{% endif %} pulls out the title, servings, ingredients and steps, and you can check everything before saving.</p>
+  </div>
+</div>
+
+<div class="stack">
+  <form method="post" action="/recipes/import/preview" class="card form-grid"
+        hx-post="/recipes/import/preview" hx-target="#import-preview" hx-swap="innerHTML" hx-indicator="#import-spinner">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+    <div class="field">
+      <label for="text">Recipe text</label>
+      <textarea class="textarea" id="text" name="text" rows="12" maxlength="8000" required placeholder="Weeknight tomato soup&#10;Serves 4&#10;&#10;Ingredients&#10;2 tbsp olive oil&#10;1 onion, chopped&#10;...&#10;&#10;Method&#10;1. Soften the onion...">{{ text or '' }}</textarea>
+      <span class="hint">Only the text you paste is sent{% if ai_enabled %} to Claude{% endif %}. Up to 8,000 characters.</span>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary" type="submit">Read recipe</button>
+      <span id="import-spinner" class="htmx-indicator muted row"><span class="spinner"></span> Reading...</span>
+    </div>
+  </form>
+
+  <div id="import-preview">
+    {% include "partials/import_preview.html" %}
+  </div>
+</div>
+{% endblock %}
