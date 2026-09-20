@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Recipes{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Recipe book</p>
+    <h1>Recipes</h1>
+    <p>Your own recipes. The bar shows how many ingredients are already in your pantry.</p>
+  </div>
+  <div class="row">
+    <a class="btn" href="/recipes/import">Import from text</a>
+    <a class="btn btn-primary" href="/recipes/new">New recipe</a>
+  </div>
+</div>
+
+<form class="row mb-4" method="get" action="/recipes" role="search">
+  <label class="visually-hidden" for="q">Search recipes</label>
+  <input class="input search" id="q" name="q" type="search" placeholder="Search by title" value="{{ q }}"
+         hx-get="/recipes" hx-trigger="input changed delay:250ms, search" hx-target="#recipe-grid" hx-swap="outerHTML" hx-push-url="true">
+  <noscript><button class="btn" type="submit">Search</button></noscript>
+</form>
+
+{% include "partials/recipe_grid.html" %}
+{% endblock %}

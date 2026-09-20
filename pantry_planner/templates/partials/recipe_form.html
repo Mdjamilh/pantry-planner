@@ -1,0 +1,30 @@
+<form method="post" action="{{ action or '/recipes' }}" class="card form-grid" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+  <input type="hidden" name="source" value="{{ form.source or 'manual' }}">
+  <div class="grid grid-2">
+    <div class="field {% if errors and errors.title %}has-error{% endif %}">
+      <label for="title">Title</label>
+      <input class="input" id="title" name="title" maxlength="160" required value="{{ form.title or '' }}">
+      {% if errors and errors.title %}<span class="field-error">{{ errors.title }}</span>{% endif %}
+    </div>
+    <div class="field {% if errors and errors.servings %}has-error{% endif %}">
+      <label for="servings">Servings</label>
+      <input class="input" id="servings" name="servings" type="number" min="1" max="50" value="{{ form.servings or 2 }}">
+      {% if errors and errors.servings %}<span class="field-error">{{ errors.servings }}</span>{% endif %}
+    </div>
+  </div>
+  <div class="field {% if errors and errors.ingredients %}has-error{% endif %}">
+    <label for="ingredients">Ingredients</label>
+    <textarea class="textarea textarea-mono" id="ingredients" name="ingredients" rows="9" placeholder="200 g spaghetti&#10;2 cloves garlic&#10;1 tbsp olive oil&#10;salt to taste">{{ form.ingredients or '' }}</textarea>
+    <span class="hint">One per line: amount, unit, name, then an optional note after a comma.</span>
+    {% if errors and errors.ingredients %}<span class="field-error">{{ errors.ingredients }}</span>{% endif %}
+  </div>
+  <div class="field">
+    <label for="instructions">Method</label>
+    <textarea class="textarea" id="instructions" name="instructions" rows="7" placeholder="One step per line">{{ form.instructions or '' }}</textarea>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" type="submit">Save recipe</button>
+    <a class="btn btn-ghost" href="{% if recipe %}/recipes/{{ recipe.id }}{% else %}/recipes{% endif %}">Cancel</a>
+  </div>
+</form>

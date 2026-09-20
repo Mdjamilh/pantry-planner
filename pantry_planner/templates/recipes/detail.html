@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ recipe.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow"><a href="/recipes">Recipes</a></p>
+    <h1>{{ recipe.title }}</h1>
+    <div class="row">
+      <span class="badge badge-plain">Serves {{ recipe.servings }}</span>
+      {% set got = have.values()|select|list|length %}
+      <span class="badge {% if got == recipe.ingredients|length %}tone-ok{% else %}tone-soon{% endif %}">You have {{ got }} of {{ recipe.ingredients|length }} ingredients</span>
+      {% if recipe.source == 'claude' %}<span class="badge tone-ai">imported by Claude</span>{% elif recipe.source == 'parser' %}<span class="badge tone-none">imported with the built-in parser</span>{% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <a class="btn" href="/recipes/{{ recipe.id }}/edit">Edit</a>
+    <form method="post" action="/recipes/{{ recipe.id }}/delete" class="inline-form" data-confirm="Delete this recipe? It will also be removed from your plan.">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <button class="btn btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <section class="card">
+      <h2>Ingredients</h2>
+      <ul class="ingredients">
+        {% for i in recipe.ingredients %}
+        <li>
+          <span class="qty">{{ format_amount(i.quantity, i.unit) }}</span>
+          <span>{{ i.name }}{% if i.note %} <span class="muted small">({{ i.note }})</span>{% endif %}</span>
+          <span class="ok">{% if have[i.id] %}<span class="badge tone-ok">in pantry</span>{% else %}<span class="badge tone-none">to buy</span>{% endif %}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Method</h2>
+      {% if steps %}
+      <ol class="steps">{% for s in steps %}<li>{{ s }}</li>{% endfor %}</ol>
+      {% else %}<p class="muted mb-0">No method written down yet.</p>{% endif %}
+    </section>
+  </div>
+
+  <aside class="card">
+    <h2>Add to this week</h2>
+    <form method="post" action="/plan" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+      <div class="field">
+        <label for="day">Day</label>
+        <select class="select" id="day" name="day">
+          {% for d in days %}<option value="{{ d.isoformat() }}" {% if d == today %}selected{% endif %}>{{ short_date(d) }}{% if d == today %} (today){% endif %}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="slot">Meal</label>
+        <select class="select" id="slot" name="slot">
+          {% for s in slots %}<option value="{{ s }}" {% if s == 'dinner' %}selected{% endif %}>{{ s|capitalize }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="servings">Servings</label>
+        <input class="input" id="servings" name="servings" type="number" min="1" max="50" value="{{ recipe.servings }}">
+      </div>
+      <button class="btn btn-primary" type="submit">Add to plan</button>
+    </form>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+<div id="recipe-grid">
+  {% if recipes %}
+  <div class="grid grid-3">
+    {% for r in recipes %}
+    {% set total = r.ingredients|length %}
+    {% set got = have.get(r.id, 0) %}
+    <a class="card recipe-card" href="/recipes/{{ r.id }}">
+      <div class="row">
+        <span class="badge badge-plain">{{ r.servings }} serving{{ 's' if r.servings != 1 }}</span>
+        {% if r.source == 'claude' %}<span class="badge tone-ai">imported by Claude</span>{% elif r.source == 'parser' %}<span class="badge tone-none">imported</span>{% endif %}
+      </div>
+      <h3>{{ r.title }}</h3>
+      <span class="meta">You have {{ got }} of {{ total }} ingredients</span>
+      <div class="meter meter-w-{{ ((got / total * 10) | round | int) if total else 0 }}" aria-hidden="true"><span></span></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% elif q %}
+  <div class="empty"><h3>No recipes match "{{ q }}"</h3><p><a href="/recipes">Clear the search</a></p></div>
+  {% else %}
+  <div class="empty">
+    <h3>No recipes yet</h3>
+    <p>Type one in, or paste a recipe from anywhere and let the importer pull out the ingredients.</p>
+  </div>
+  {% endif %}
+</div>

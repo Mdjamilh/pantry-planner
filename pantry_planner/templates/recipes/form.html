@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{% if recipe %}Edit {{ recipe.title }}{% else %}New recipe{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow"><a href="/recipes">Recipes</a></p>
+    <h1>{% if recipe %}Edit recipe{% else %}New recipe{% endif %}</h1>
+    <p>Write one ingredient per line, like "200 g spaghetti" or "2 cloves garlic, crushed". Units are recognised so the shopping list can add things up.</p>
+  </div>
+</div>
+{% include "partials/recipe_form.html" %}
+{% endblock %}
