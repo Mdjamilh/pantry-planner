@@ -1,0 +1,39 @@
+<div id="shopping-list">
+  {% if bought %}<div class="alert" role="status">Moved {{ bought }} into the pantry.</div>{% endif %}
+  {% if items %}
+  <div class="card p-0">
+    <ul class="shopping">
+      {% for i in items %}
+      <li>
+        <span class="check" aria-hidden="true"></span>
+        <div class="what">
+          <strong>{{ i.name }}{% if i.amount_text %}<span class="amount">{{ i.amount_text }}</span>{% endif %}</strong>
+          <span class="for">for {{ i.recipes|join(', ') }}</span>
+          {% if i.note %}<div class="note">{{ i.note }}</div>{% endif %}
+        </div>
+        <form method="post" action="/shopping/bought" class="inline-form no-print"
+              hx-post="/shopping/bought" hx-target="#shopping-list" hx-swap="outerHTML">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+          <input type="hidden" name="name" value="{{ i.name }}">
+          <input type="hidden" name="quantity" value="{{ i.quantity if i.quantity is not none else '' }}">
+          <input type="hidden" name="unit" value="{{ i.unit }}">
+          <input type="hidden" name="week" value="{{ week }}">
+          <button class="btn btn-sm" type="submit" aria-label="Bought {{ i.name }}">Bought</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <pre id="shopping-text" class="visually-hidden">{{ plain_text }}</pre>
+  {% elif planned %}
+  <div class="empty">
+    <h3>You have everything</h3>
+    <p>The pantry covers every meal planned for this week.</p>
+  </div>
+  {% else %}
+  <div class="empty">
+    <h3>Nothing planned this week</h3>
+    <p><a href="/plan?week={{ week }}">Plan a few meals</a> and the list fills itself in.</p>
+  </div>
+  {% endif %}
+</div>

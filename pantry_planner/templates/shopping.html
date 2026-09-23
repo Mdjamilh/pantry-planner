@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Shopping list{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Shopping list</p>
+    <h1>For {{ short_date(monday) }} - {{ short_date(sunday) }}</h1>
+    <p>Everything the plan needs, minus what's already in the pantry. Amounts are scaled to the servings you planned and converted between units.</p>
+  </div>
+  <div class="row no-print">
+    <nav class="week-nav" aria-label="Week">
+      <a class="btn btn-sm" href="/shopping?week={{ prev_week }}" aria-label="Previous week">&larr;</a>
+      <a class="btn btn-sm" href="/shopping?week={{ next_week }}" aria-label="Next week">&rarr;</a>
+    </nav>
+    <button class="btn" type="button" data-copy="shopping-text">Copy as text</button>
+    <button class="btn" type="button" data-print>Print</button>
+  </div>
+</div>
+{% include "partials/shopping_list.html" %}
+{% endblock %}
