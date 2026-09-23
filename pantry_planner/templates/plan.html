@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Meal plan{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Weekly plan</p>
+    <h1>{% if this_week %}This week{% else %}Week of {{ short_date(monday) }}{% endif %}</h1>
+    <p>{{ planned }} meal{{ 's' if planned != 1 }} planned. The shopping list updates as you go.</p>
+  </div>
+  <div class="row">
+    <nav class="week-nav" aria-label="Week">
+      <a class="btn btn-sm" href="/plan?week={{ prev_week }}" aria-label="Previous week">&larr;</a>
+      <span class="week-label">{{ short_date(monday) }} - {{ short_date(sunday) }}</span>
+      <a class="btn btn-sm" href="/plan?week={{ next_week }}" aria-label="Next week">&rarr;</a>
+    </nav>
+    <a class="btn btn-primary" href="/shopping?week={{ monday.isoformat() }}">Shopping list</a>
+  </div>
+</div>
+
+{% if not recipes %}
+<div class="alert alert-info">Add a recipe first, then come back to plan it. <a href="/recipes/new">New recipe</a></div>
+{% endif %}
+
+<div class="plan">
+  {% for d in grid %}
+  <section class="plan-day {% if d.day == today %}is-today{% endif %}" aria-label="{{ d.day.strftime('%A') }}">
+    <header class="plan-day-head">
+      <strong>{{ d.day.strftime('%a') }}</strong>
+      <span>{{ d.day.day }} {{ d.day.strftime('%b') }}{% if d.day == today %} &middot; today{% endif %}</span>
+    </header>
+    {% for slot in slots %}
+    {% with day=d.day, entries=d.cells[slot] %}{% include "partials/plan_cell.html" %}{% endwith %}
+    {% endfor %}
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% set cell_id = "cell-" ~ day.isoformat() ~ "-" ~ slot %}
+<div class="plan-cell" id="{{ cell_id }}">
+  <span class="slot-label">{{ slot }}</span>
+  {% for e in entries %}
+  <div class="meal">
+    <a href="/recipes/{{ e.recipe.id }}">{{ e.recipe.title }}</a>
+    <span class="serv">x{{ e.servings }}</span>
+    <form method="post" action="/plan/{{ e.id }}/delete" class="inline-form"
+          hx-post="/plan/{{ e.id }}/delete" hx-target="#{{ cell_id }}" hx-swap="outerHTML">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+      <button type="submit" aria-label="Remove {{ e.recipe.title }} from {{ day.strftime('%A') }} {{ slot }}">&times;</button>
+    </form>
+  </div>
+  {% endfor %}
+  {% if recipes %}
+  <form method="post" action="/plan" class="add-meal"
+        hx-post="/plan" hx-target="#{{ cell_id }}" hx-swap="outerHTML">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+    <input type="hidden" name="day" value="{{ day.isoformat() }}">
+    <input type="hidden" name="slot" value="{{ slot }}">
+    <label class="visually-hidden" for="{{ cell_id }}-recipe">Recipe for {{ day.strftime('%A') }} {{ slot }}</label>
+    <select class="select" id="{{ cell_id }}-recipe" name="recipe_id">
+      {% for r in recipes %}<option value="{{ r.id }}">{{ r.title }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-sm" type="submit" aria-label="Add to {{ day.strftime('%A') }} {{ slot }}">+</button>
+  </form>
+  {% endif %}
+</div>
