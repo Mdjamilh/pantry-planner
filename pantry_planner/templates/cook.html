@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}What can I cook?{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Use it up</p>
+    <h1>What can I cook?</h1>
+    <p>Ideas built around what's in your pantry, with the soonest-expiring items first.
+      {% if ai_enabled %}Claude ({{ ai_model }}) answers; only ingredient names and days until expiry are sent.{% else %}No Anthropic API key is configured, so the built-in matcher answers from your recipe book and a small catalog of everyday dishes.{% endif %}</p>
+  </div>
+</div>
+
+<div class="split">
+  <div>
+    <section class="card cook-panel no-print">
+      <form method="post" action="/cook/suggest" class="row"
+            hx-post="/cook/suggest" hx-target="#suggestions" hx-swap="innerHTML" hx-indicator="#cook-spinner">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <button class="btn btn-accent btn-lg" type="submit" {% if not pantry_count %}disabled{% endif %}>Suggest dishes</button>
+        <span id="cook-spinner" class="htmx-indicator muted row"><span class="spinner"></span> Thinking about your pantry...</span>
+      </form>
+      {% if not pantry_count %}<p class="muted mb-0">Add a few <a href="/pantry">pantry items</a> first.</p>{% endif %}
+    </section>
+    <div id="suggestions" class="mt-4" aria-live="polite">
+      {% if result or limited %}{% include "partials/suggestions.html" %}{% endif %}
+    </div>
+  </div>
+
+  <aside class="card">
+    <h2>Use soon</h2>
+    {% if expiring %}
+    <ul class="list">
+      {% for item in expiring %}
+      {% set left = item.days_left(today) %}
+      <li><span>{{ item.name }}</span><span class="badge tone-{{ days_tone(left) }}">{{ days_label(left) }}</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted mb-0">Nothing expires in the next few days.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

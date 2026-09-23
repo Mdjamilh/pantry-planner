@@ -1,0 +1,37 @@
+{% if limited %}
+<div class="alert alert-warn" role="status">You've asked for a lot of suggestions in the last few minutes. Give it a short break and try again.</div>
+{% elif result %}
+<div class="provider" data-provider="{{ result.provider }}">
+  {% if result.provider == 'claude' %}
+  <span class="badge tone-ai">Answered by Claude</span><span>{{ result.model }}</span>
+  {% else %}
+  <span class="badge tone-accent">Answered by the built-in matcher</span>
+  <span>{% if result.notice %}{{ result.notice }}{% else %}No Anthropic API key is set, so this ran locally with fixed rules.{% endif %}</span>
+  {% endif %}
+</div>
+{% if result.suggestions %}
+<div class="grid grid-2">
+  {% for s in result.suggestions %}
+  {% set rid = (result.recipe_links or {}).get(s.title) %}
+  <article class="card suggestion">
+    <div>
+      <h3>{% if rid %}<a href="/recipes/{{ rid }}">{{ s.title }}</a>{% else %}{{ s.title }}{% endif %}</h3>
+      {% if rid %}<span class="badge tone-ok">in your recipe book</span>{% endif %}
+    </div>
+    <p class="reason">{{ s.reason }}</p>
+    {% if s.uses %}
+    <div><div class="sub">Uses</div><ul class="chips">{% for u in s.uses %}<li class="chip chip-have">{{ u }}</li>{% endfor %}</ul></div>
+    {% endif %}
+    {% if s.missing %}
+    <div><div class="sub">You'd need</div><ul class="chips">{% for m in s.missing %}<li class="chip chip-missing">{{ m }}</li>{% endfor %}</ul></div>
+    {% endif %}
+    {% if s.steps %}
+    <div><div class="sub">How</div><ol>{% for st in s.steps %}<li>{{ st }}</li>{% endfor %}</ol></div>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty"><h3>No good matches yet</h3><p>Add a few more pantry items or recipes and try again.</p></div>
+{% endif %}
+{% endif %}
