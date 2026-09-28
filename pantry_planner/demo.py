@@ -155,7 +155,9 @@ def seed(session: Session, today: dt.date) -> User:
     if session.get_bind().dialect.name == "postgresql":
         # We inserted an explicit id, so move the sequence past it.
         session.execute(
-            text("SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT MAX(id) FROM users))")
+            text(
+                "SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT MAX(id) FROM users))"
+            )
         )
 
     for name, qty, unit, days in PANTRY:

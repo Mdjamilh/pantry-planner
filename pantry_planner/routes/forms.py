@@ -38,7 +38,9 @@ def parse_quantity_field(value: str) -> float | None:
 
 
 def validate_pantry(name: str, quantity: str, unit: str, expires_on: str) -> PantryInput:
-    data = PantryInput(raw={"name": name, "quantity": quantity, "unit": unit, "expires_on": expires_on})
+    data = PantryInput(
+        raw={"name": name, "quantity": quantity, "unit": unit, "expires_on": expires_on}
+    )
     data.name = " ".join(name.split())
     if not 1 <= len(data.name) <= 120:
         data.errors["name"] = "Give the item a name."

@@ -96,9 +96,7 @@ def add_entry(
     if existing is not None:
         existing.servings = n
     else:
-        db.add(
-            MealPlanEntry(user_id=user.id, day=when, slot=slot, recipe_id=recipe.id, servings=n)
-        )
+        db.add(MealPlanEntry(user_id=user.id, day=when, slot=slot, recipe_id=recipe.id, servings=n))
     try:
         db.commit()
     except IntegrityError:

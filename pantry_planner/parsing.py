@@ -29,7 +29,7 @@ _FRACTION_CHARS = "".join(UNICODE_FRACTIONS)
 _NUMBER = rf"(?:\d+(?:[.,]\d+)?(?:\s*[{_FRACTION_CHARS}])?|[{_FRACTION_CHARS}])"
 _QTY_RE = re.compile(
     rf"^(?P<qty>\d+\s+\d+/\d+|\d+/\d+|{_NUMBER})"
-    rf"(?:\s*(?:-|–|to)\s*(?P<qty2>\d+/\d+|{_NUMBER}))?"
+    rf"(?:\s*(?:-|\N{{EN DASH}}|to)\s*(?P<qty2>\d+/\d+|{_NUMBER}))?"
 )
 _BULLET_RE = re.compile(r"^\s*(?:[-*•·▪]+|\d+[.)](?=\s))\s*")
 _TO_TASTE_RE = re.compile(r"\b(to taste|as needed|optional|for serving|for garnish)\b", re.I)

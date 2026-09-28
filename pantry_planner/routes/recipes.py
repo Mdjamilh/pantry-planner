@@ -70,9 +70,7 @@ def _apply(recipe: Recipe, title: str, servings: int, ingredients: str, instruct
 
 
 @router.get("")
-def recipe_list(
-    request: Request, db: DB, user: CurrentUser, today: Today, q: str = ""
-) -> Response:
+def recipe_list(request: Request, db: DB, user: CurrentUser, today: Today, q: str = "") -> Response:
     recipes = services.list_recipes(db, user.id, q)
     keys = services.pantry_keys(services.list_pantry(db, user.id), today)
     have = {
@@ -142,9 +140,13 @@ def import_preview(
 ) -> Response:
     text = text.strip()
     if not text:
-        ctx = {"nav": "recipes", "error": "Paste a recipe first."}
         template = "partials/import_preview.html" if is_htmx(request) else "recipes/import.html"
-        return render(request, template, ctx, status_code=200 if is_htmx(request) else 400)
+        return render(
+            request,
+            template,
+            {"nav": "recipes", "error": "Paste a recipe first."},
+            status_code=200 if is_htmx(request) else 400,
+        )
     limiter = request.app.state.ai_limiter
     if assistant.settings.ai_enabled and not limiter.allow(f"import:{user.id}"):
         result = None

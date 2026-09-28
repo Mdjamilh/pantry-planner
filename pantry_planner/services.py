@@ -36,7 +36,9 @@ def parse_week(value: str | None, today: dt.date) -> dt.date:
 def list_pantry(db: Session, user_id: int) -> list[PantryItem]:
     items = db.scalars(select(PantryItem).where(PantryItem.user_id == user_id)).all()
     # Soonest expiry first; items without a date go last, alphabetically.
-    return sorted(items, key=lambda i: (i.expires_on is None, i.expires_on or dt.date.max, i.name.lower()))
+    return sorted(
+        items, key=lambda i: (i.expires_on is None, i.expires_on or dt.date.max, i.name.lower())
+    )
 
 
 def get_pantry_item(db: Session, user_id: int, item_id: int) -> PantryItem | None:
@@ -92,9 +94,7 @@ def recipe_candidates(recipes: list[Recipe]) -> list[Candidate]:
 
 def pantry_keys(items: list[PantryItem], today: dt.date) -> set[str]:
     return {
-        units.normalize_name(i.name)
-        for i in items
-        if i.expires_on is None or i.expires_on >= today
+        units.normalize_name(i.name) for i in items if i.expires_on is None or i.expires_on >= today
     }
 
 
@@ -120,9 +120,7 @@ def week_entries(db: Session, user_id: int, monday: dt.date) -> list[MealPlanEnt
     return list(db.scalars(stmt).all())
 
 
-def entries_for_cell(
-    db: Session, user_id: int, day: dt.date, slot: str
-) -> list[MealPlanEntry]:
+def entries_for_cell(db: Session, user_id: int, day: dt.date, slot: str) -> list[MealPlanEntry]:
     stmt = (
         select(MealPlanEntry)
         .where(

@@ -12,7 +12,7 @@ from ..config import Settings
 from . import matcher
 from .claude import AIUnavailable, ClaudeProvider, make_client
 from .recipe_parser import parse_recipe_text
-from .schemas import Candidate, ImportResult, PantryFact, SuggestionResult
+from .schemas import Candidate, ImportResult, PantryFact, Suggestion, SuggestionResult
 
 log = logging.getLogger(__name__)
 
@@ -69,12 +69,11 @@ class Assistant:
         return ImportResult(recipe=parse_recipe_text(text), provider="fallback", notice=notice)
 
 
-def _link_titles(suggestions: list[object], book: list[Candidate]) -> dict[str, int]:
+def _link_titles(suggestions: list[Suggestion], book: list[Candidate]) -> dict[str, int]:
     by_title = {c.title.strip().lower(): c.recipe_id for c in book if c.recipe_id is not None}
     links: dict[str, int] = {}
     for s in suggestions:
-        title = getattr(s, "title", "")
-        rid = by_title.get(title.strip().lower())
+        rid = by_title.get(s.title.strip().lower())
         if rid is not None:
-            links[title] = rid
+            links[s.title] = rid
     return links

@@ -115,8 +115,7 @@ def _describe_error(exc: Exception) -> str:
     return "Claude's answer could not be read"
 
 
-def make_client(api_key: str, timeout: float) -> _Client:
+def make_client(api_key: str, timeout: float) -> Any:
     import anthropic
 
-    client: _Client = anthropic.Anthropic(api_key=api_key, timeout=timeout, max_retries=1)
-    return client
+    return anthropic.Anthropic(api_key=api_key, timeout=timeout, max_retries=1)
