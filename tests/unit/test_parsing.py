@@ -18,6 +18,7 @@ from pantry_planner.parsing import (
         ("½ tsp salt", 0.5, "tsp salt"),
         ("1½ cups rice", 1.5, "cups rice"),
         ("2-3 carrots", 3.0, "carrots"),
+        ("2\N{EN DASH}3 carrots", 3.0, "carrots"),
         ("2 to 4 cloves garlic", 4.0, "cloves garlic"),
         ("a pinch of salt", 1.0, "pinch of salt"),
         ("salt", None, "salt"),

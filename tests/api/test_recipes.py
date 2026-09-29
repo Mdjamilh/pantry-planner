@@ -41,7 +41,12 @@ def test_edit_round_trips_ingredients(user: Browser) -> None:
     assert "1 onion, chopped" in form
     r = user.post(
         f"/recipes/{rid}",
-        {"title": "Better soup", "servings": "3", "ingredients": "1 kg tomatoes", "instructions": ""},
+        {
+            "title": "Better soup",
+            "servings": "3",
+            "ingredients": "1 kg tomatoes",
+            "instructions": "",
+        },
     )
     assert r.status_code == 303
     page = user.get(f"/recipes/{rid}").text
@@ -69,7 +74,10 @@ def test_delete(user: Browser) -> None:
 
 
 def test_import_preview_with_parser(user: Browser) -> None:
-    text = "Quick omelette\nServes 1\nIngredients\n3 eggs\n30 g cheddar, grated\nMethod\nWhisk and cook."
+    text = (
+        "Quick omelette\nServes 1\nIngredients\n3 eggs\n30 g cheddar, grated\n"
+        "Method\nWhisk and cook."
+    )
     r = user.post("/recipes/import/preview", {"text": text}, htmx=True)
     assert r.status_code == 200
     assert 'data-provider="fallback"' in r.text

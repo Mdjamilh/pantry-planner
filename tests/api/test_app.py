@@ -41,7 +41,16 @@ def test_404_page(user: Browser) -> None:
 
 def test_no_inline_scripts_or_styles(user: Browser) -> None:
     """The CSP forbids inline code, so templates must not contain any."""
-    for path in ["/", "/pantry", "/recipes", "/recipes/new", "/recipes/import", "/plan", "/shopping", "/cook"]:
+    for path in [
+        "/",
+        "/pantry",
+        "/recipes",
+        "/recipes/new",
+        "/recipes/import",
+        "/plan",
+        "/shopping",
+        "/cook",
+    ]:
         html = user.get(path).text
         assert "<script>" not in html, path
         assert " style=" not in html, path

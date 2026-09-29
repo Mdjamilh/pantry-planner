@@ -98,7 +98,12 @@ def user(client: TestClient) -> Browser:
 def add_recipe(browser: Browser, title: str, servings: int, ingredients: str) -> int:
     r = browser.post(
         "/recipes",
-        {"title": title, "servings": str(servings), "ingredients": ingredients, "instructions": "Cook."},
+        {
+            "title": title,
+            "servings": str(servings),
+            "ingredients": ingredients,
+            "instructions": "Cook.",
+        },
     )
     assert r.status_code == 303, r.text
     return int(r.headers["location"].rsplit("/", 1)[1])

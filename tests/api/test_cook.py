@@ -68,7 +68,10 @@ def test_claude_answers_when_key_is_set(make_app: AppFactory) -> None:
     with TestClient(app, follow_redirects=False) as client:
         b = Browser(client)
         register(b, email="private.person@example.com", name="Private Person")
-        b.post("/pantry", {"name": "Spinach", "quantity": "100", "unit": "g", "expires_on": "2026-10-22"})
+        b.post(
+            "/pantry",
+            {"name": "Spinach", "quantity": "100", "unit": "g", "expires_on": "2026-10-22"},
+        )
         page = b.get("/cook").text
         assert "Claude (claude-haiku-5-5) answers" in page
 

@@ -100,9 +100,7 @@ def test_csrf_is_required(client: TestClient) -> None:
     client.get("/login")
     r = client.post("/login", data={"email": "a@b.co", "password": "x"})
     assert r.status_code == 403
-    r = client.post(
-        "/login", data={"email": "a@b.co", "password": "x", "csrf_token": "forged"}
-    )
+    r = client.post("/login", data={"email": "a@b.co", "password": "x", "csrf_token": "forged"})
     assert r.status_code == 403
 
 

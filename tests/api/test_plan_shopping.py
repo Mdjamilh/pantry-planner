@@ -8,7 +8,14 @@ MONDAY = "2026-10-19"
 WEDNESDAY = "2026-10-21"
 
 
-def plan(user: Browser, rid: int, day: str = WEDNESDAY, slot: str = "dinner", servings: str = "", htmx: bool = False):  # type: ignore[no-untyped-def]
+def plan(
+    user: Browser,
+    rid: int,
+    day: str = WEDNESDAY,
+    slot: str = "dinner",
+    servings: str = "",
+    htmx: bool = False,
+):  # type: ignore[no-untyped-def]
     return user.post(
         "/plan", {"day": day, "slot": slot, "recipe_id": str(rid), "servings": servings}, htmx=htmx
     )
