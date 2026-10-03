@@ -85,8 +85,8 @@ def test_api_shopping_list(user: Browser) -> None:
     data = user.get("/api/shopping-list").json()
     assert data["week_start"] == MONDAY
     assert {(i["name"], i["quantity"], i["unit"]) for i in data["items"]} == {
-        ("carrots", 500, "g"),
-        ("onions", 1, "pc"),
+        ("Carrots", 500, "g"),
+        ("Onions", 1, "pc"),
     }
 
 
@@ -95,14 +95,14 @@ def test_bought_moves_item_to_pantry(user: Browser) -> None:
     plan(user, rid)
     r = user.post(
         "/shopping/bought",
-        {"name": "eggs", "quantity": "3", "unit": "pc", "week": MONDAY},
+        {"name": "Eggs", "quantity": "3", "unit": "pc", "week": MONDAY},
         htmx=True,
     )
     assert r.status_code == 200
-    assert "Moved eggs into the pantry." in r.text
+    assert "Moved Eggs into the pantry." in r.text
     assert "You have everything" in r.text
     pantry = user.get("/api/pantry").json()["items"]
-    assert [(i["name"], i["quantity"]) for i in pantry] == [("eggs", 3)]
+    assert [(i["name"], i["quantity"]) for i in pantry] == [("Eggs", 3)]
 
 
 def test_empty_states(user: Browser) -> None:

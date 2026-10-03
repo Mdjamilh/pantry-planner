@@ -82,3 +82,19 @@ def test_large_amounts_are_humanised() -> None:
 )
 def test_scale_quantity(qty, recipe, planned, expected) -> None:  # type: ignore[no-untyped-def]
     assert scale_quantity(qty, recipe, planned) == expected
+
+
+def test_spoon_units_are_kept() -> None:
+    needs = [Need("Honey", 1, "tbsp", "Bowl"), Need("honey", 2, "tbsp", "Toast")]
+    items = build_shopping_list(needs, [], TODAY)
+    assert names(items) == [("honey", "3 tbsp")]
+
+
+def test_countable_items_round_up() -> None:
+    needs = [Need("Garlic", 8.5, "cloves", "A"), Need("Onion", 0.5, "", "B")]
+    assert names(build_shopping_list(needs, [], TODAY)) == [("garlic", "9 clove"), ("onion", "1")]
+
+
+def test_display_name_is_capitalised() -> None:
+    items = build_shopping_list([Need("bell pepper", 1, "", "A")], [], TODAY)
+    assert items[0].name == "Bell pepper"
