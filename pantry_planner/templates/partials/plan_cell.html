@@ -19,7 +19,8 @@
     <input type="hidden" name="day" value="{{ day.isoformat() }}">
     <input type="hidden" name="slot" value="{{ slot }}">
     <label class="visually-hidden" for="{{ cell_id }}-recipe">Recipe for {{ day.strftime('%A') }} {{ slot }}</label>
-    <select class="select" id="{{ cell_id }}-recipe" name="recipe_id">
+    <select class="select" id="{{ cell_id }}-recipe" name="recipe_id" required>
+      <option value="" selected disabled>Add a meal</option>
       {% for r in recipes %}<option value="{{ r.id }}">{{ r.title }}</option>{% endfor %}
     </select>
     <button class="btn btn-sm" type="submit" aria-label="Add to {{ day.strftime('%A') }} {{ slot }}">+</button>
