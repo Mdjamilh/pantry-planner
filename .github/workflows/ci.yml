@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.13"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  lint:
+    name: Lint, types and audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Mypy (strict)
+        run: mypy
+      - name: Dependency audit
+        run: pip-audit -r requirements.txt --strict
+
+  test:
+    name: Tests (${{ matrix.db }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: pantry
+          POSTGRES_PASSWORD: pantry
+          POSTGRES_DB: pantry_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pantry"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Unit and API tests
+        env:
+          TEST_DATABASE_URL: ${{ matrix.db == 'postgres' && 'postgresql://pantry:pantry@localhost:5432/pantry_test' || '' }}
+        run: pytest -m "not e2e" --cov=pantry_planner --cov-report=term-missing:skip-covered
+      - name: Migrations apply cleanly
+        if: matrix.db == 'postgres'
+        env:
+          DATABASE_URL: postgresql://pantry:pantry@localhost:5432/pantry_test
+        run: |
+          alembic downgrade base
+          alembic upgrade head
+
+  e2e:
+    name: Browser tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - run: python -m playwright install --with-deps chromium
+      - name: Playwright e2e
+        run: pytest -m e2e --tracing retain-on-failure --output test-results
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results
+          retention-days: 7
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: docker build -t pantry-planner:ci .
+      - name: Smoke test
+        run: |
+          docker run -d --name pp -p 8000:8000 -e SECRET_KEY=ci -e DEMO_MODE=true pantry-planner:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/healthz; then exit 0; fi
+            sleep 1
+          done
+          docker logs pp
+          exit 1
