@@ -210,7 +210,9 @@ class DemoResetter:
 
     def __init__(self, interval_hours: float) -> None:
         self.interval = interval_hours * 3600
-        self.last_reset = 0.0
+        # None means "never reset in this process". Don't use 0.0: monotonic()
+        # can be small on a freshly booted machine, which would skip the seed.
+        self.last_reset: float | None = None
 
     def reset(self, session: Session, today: dt.date) -> None:
         wipe(session)
@@ -219,4 +221,6 @@ class DemoResetter:
         self.last_reset = time.monotonic()
 
     def due(self) -> bool:
+        if self.last_reset is None:
+            return True
         return time.monotonic() - self.last_reset >= self.interval
