@@ -1,5 +1,47 @@
-# Dependencies live in requirements.txt (runtime) and requirements-dev.txt.
-# This file only holds tool configuration.
+[project]
+name = "pantry-planner"
+version = "0.1.0"
+description = "Meal planner with pantry expiry tracking, a unit-aware shopping list and Claude suggestions."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+# Direct runtime dependencies, pinned. uv.lock pins everything else.
+# Vercel installs exactly this list (dev tools are not deployed).
+dependencies = [
+    "fastapi==0.143.0",
+    "starlette==1.7.0",
+    "uvicorn[standard]==0.54.0",
+    "jinja2==3.1.6",
+    "python-multipart==0.0.32",
+    "itsdangerous==2.2.0",
+    "sqlalchemy==2.1.4",
+    "alembic==1.20.0",
+    "psycopg[binary]==3.3.6",
+    "pydantic==2.14.0",
+    "pydantic-settings==2.15.0",
+    "argon2-cffi==25.1.0",
+    "anthropic==1.13.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "pytest-playwright==0.10.0",
+    "playwright==1.63.0",
+    "ruff==0.17.0",
+    "mypy==2.4.0",
+    "pip-audit==2.10.1",
+]
+
+[tool.uv]
+# This is an application, not a library: install dependencies only.
+package = false
+# Only resolve releases that have been public for a while.
+exclude-newer = "2026-10-10T00:00:00Z"
+
+[tool.vercel]
+entrypoint = "app:app"
 
 [tool.ruff]
 line-length = 100
