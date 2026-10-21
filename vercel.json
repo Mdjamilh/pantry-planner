@@ -3,7 +3,7 @@
   "functions": {
     "app.py": {
       "maxDuration": 30,
-      "excludeFiles": "{tests/**,docs/**,.github/**,*.db,Dockerfile,requirements-dev.txt}"
+      "excludeFiles": "{tests/**,docs/**,.github/**,*.db,Dockerfile}"
     }
   }
 }
