@@ -43,7 +43,7 @@
         <tr><th>Item</th><th class="num">Amount</th><th>Best before</th><th class="actions"><span class="visually-hidden">Actions</span></th></tr>
       </thead>
       <tbody>
-        {% for item in items %}{% include "partials/pantry_row.html" %}{% endfor %}
+        {% for item in items %}{% if editing == item.id %}{% include "partials/pantry_row_edit.html" %}{% else %}{% include "partials/pantry_row.html" %}{% endif %}{% endfor %}
       </tbody>
     </table>
   </div>

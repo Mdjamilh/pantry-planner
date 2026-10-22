@@ -70,7 +70,7 @@ def test_edit_and_update_inline(user: Browser) -> None:
     assert r.status_code == 200
     assert "Rolled oats" in r.text
     assert "1.5 kg" in r.text
-    row = user.get(f"/pantry/{item_id}/row")
+    row = user.get(f"/pantry/{item_id}/row", headers={"HX-Request": "true"})
     assert "Rolled oats" in row.text
 
 
@@ -104,3 +104,12 @@ def test_other_users_items_are_invisible(client: TestClient) -> None:
     assert bob.get(f"/pantry/{item_id}/edit").status_code == 404
     assert bob.post(f"/pantry/{item_id}/delete").status_code == 404
     assert bob.post(f"/pantry/{item_id}", {"name": "Mine", "quantity": "9"}).status_code == 404
+
+
+def test_edit_without_javascript_renders_full_page(user: Browser) -> None:
+    user.post("/pantry", {"name": "Oats", "quantity": "500", "unit": "g"})
+    (item_id,) = item_ids(user.get("/pantry").text)
+    page = user.get(f"/pantry/{item_id}/edit")
+    assert page.text.lstrip().startswith("<!doctype html>")
+    assert f'id="e-qty-{item_id}"' in page.text
+    assert user.get(f"/pantry/{item_id}/row").status_code == 303

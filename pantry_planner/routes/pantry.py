@@ -87,12 +87,21 @@ def add_item(
 @router.get("/{item_id}/row")
 def item_row(request: Request, item_id: int, db: DB, user: CurrentUser, today: Today) -> Response:
     item = _own_item(db, user.id, item_id)
+    if not is_htmx(request):
+        return redirect("/pantry")
     return render(request, "partials/pantry_row.html", {"item": item, "today": today})
 
 
 @router.get("/{item_id}/edit")
 def edit_row(request: Request, item_id: int, db: DB, user: CurrentUser, today: Today) -> Response:
     item = _own_item(db, user.id, item_id)
+    if not is_htmx(request):
+        # Row fragments only make sense inside the table; show the full page.
+        return render(
+            request,
+            "pantry.html",
+            {**_page_context(db, user.id, today, request.app.state.settings), "editing": item.id},
+        )
     return render(
         request,
         "partials/pantry_row_edit.html",
